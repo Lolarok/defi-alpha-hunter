@@ -1,0 +1,43 @@
+{
+  "data_sources": {
+    "coingecko": {
+      "base_url": "https://api.coingecko.com/api/v3",
+      "enabled": true,
+      "timeout": 30
+    },
+    "defillama": {
+      "base_url": "https://api.llama.fi",
+      "enabled": true,
+      "timeout": 30
+    }
+  },
+  "sectors": ["DeFi", "L1", "L2", "Meme", "AI", "Gaming", "Infra", "RWA"],
+  "watchlist": {
+    "top_by_market_cap": 100,
+    "exclude": ["stablecoins", "wrapped", "forked"]
+  },
+  "scoring": {
+    "weights": {
+      "market_analyst": 1.0,
+      "onchain_analyst": 1.0,
+      "sentiment_analyst": 1.0,
+      "research_analyst": 1.0,
+      "trader": 1.0,
+      "risk_manager": 1.0,
+      "portfolio_mgr": 1.0
+    },
+    "min_confidence": 0.6,
+    "max_position_size": 0.2
+  },
+  "memory": {
+    "db_path": "memory.db",
+    "learning_rate": 0.3,
+    "decay_factor": 0.7,
+    "review_period_days": 30
+  },
+  "run": {
+    "history_days": 30,
+    "timeout_seconds": 300,
+    "retry_attempts": 3
+  }
+}

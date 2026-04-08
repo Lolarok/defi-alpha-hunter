@@ -1,0 +1,14 @@
+# Requirements for DeFi Alpha Hunter v2
+
+## Core Dependencies
+requests>=2.31      # HTTP requests
+pydantic>=2.0       # Data validation and settings management
+
+## LLM Providers (choose one or configure via .env)
+openai>=1.0         # OpenAI API
+anthropic>=0.20     # Anthropic Claude
+google-genai>=0.1   # Google Gemini
+
+## Optional (for advanced features)
+# langchain>=0.1    # For more complex LLM workflows
+# torch>=2.0       # If adding ML components later
