@@ -1,0 +1,65 @@
+name: DeFi Alpha Hunter Analysis
+
+on:
+  schedule:
+    - cron: '0 9 * * *'  # Daily at 09:00 UTC
+  workflow_dispatch:
+    inputs:
+      force:
+        description: 'Force rescan even if recent'
+        required: false
+        default: 'false'
+
+jobs:
+  hunt:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run alpha hunt
+        run: |
+          mkdir -p output
+          python example.py --output output/results.json
+
+      - name: Validate output
+        run: |
+          python -c "
+          import json
+          try:
+              with open('output/results.json', 'r') as f:
+                  data = json.load(f)
+              allocation = data.get('allocation', {})
+              if not allocation:
+                  print('WARNING: No allocation generated')
+              else:
+                  total = sum(allocation.values())
+                  print(f'OK: Generated allocation with total weight: {total:.2f}')
+                  for token, weight in allocation.items():
+                      print(f'  {token}: {weight:.2%}')
+          except Exception as e:
+              print(f'ERROR: {e}')
+              exit(1)
+          "
+
+      - name: Commit and push results
+        if: github.ref == 'refs/heads/main'
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          if [ -n "$(git status --porcelain)" ]; then
+            git add output/
+            git commit -m "Update alpha hunt results: $(date -u +'%Y-%m-%d %H:%M:%S UTC')" || echo "No changes to commit"
+            git push
+          fi
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
